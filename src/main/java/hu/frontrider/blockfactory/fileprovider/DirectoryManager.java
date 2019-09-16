@@ -21,7 +21,6 @@ public class DirectoryManager {
                 throw new DirectoryStateException(blockFolder);
             }
         }
-
         return blockFolder;
     }
 
@@ -32,7 +31,7 @@ public class DirectoryManager {
             }
         }
 
-        return blockFolder;
+        return itemFolder;
     }
 
     class DirectoryStateException extends RuntimeException{

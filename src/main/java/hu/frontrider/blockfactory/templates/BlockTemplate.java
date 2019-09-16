@@ -1,5 +1,6 @@
 package hu.frontrider.blockfactory.templates;
 
+import hu.frontrider.blockfactory.data.BlockType;
 import hu.frontrider.blockfactory.data.Material;
 import net.minecraft.block.BlockRenderLayer;
 
@@ -10,6 +11,8 @@ public interface BlockTemplate {
     boolean canSpawnMobs();
     boolean isAir();
     int getLightLevel();
+
+    BlockType getType();
 
     /**
      * sets the render type from MODEL to INVISIBLE

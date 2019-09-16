@@ -1,4 +1,4 @@
-package hu.frontrider.blockfactory.content;
+package hu.frontrider.blockfactory.content.block;
 
 import hu.frontrider.blockfactory.templates.BlockTemplate;
 import net.fabricmc.fabric.api.block.FabricBlockSettings;

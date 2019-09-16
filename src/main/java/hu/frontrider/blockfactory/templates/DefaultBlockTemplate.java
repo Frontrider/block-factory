@@ -1,5 +1,6 @@
 package hu.frontrider.blockfactory.templates;
 
+import hu.frontrider.blockfactory.data.BlockType;
 import hu.frontrider.blockfactory.data.Material;
 import net.minecraft.block.BlockRenderLayer;
 
@@ -17,6 +18,29 @@ public class DefaultBlockTemplate implements BlockTemplate {
     private boolean isCollideable = true;
     private boolean hasItem = true;
     private boolean ticksRandomly=false;
+    private BlockType type = BlockType.NORMAl;
+
+    public boolean isCanSpawnMobs() {
+        return canSpawnMobs;
+    }
+
+    public boolean isHasItem() {
+        return hasItem;
+    }
+
+    public boolean isTicksRandomly() {
+        return ticksRandomly;
+    }
+
+    public DefaultBlockTemplate setTicksRandomly(boolean ticksRandomly) {
+        this.ticksRandomly = ticksRandomly;
+        return this;
+    }
+
+    public DefaultBlockTemplate setType(BlockType blockType) {
+        this.type = blockType;
+        return this;
+    }
 
     @Override
     public Material getMaterial() {
@@ -41,6 +65,11 @@ public class DefaultBlockTemplate implements BlockTemplate {
     @Override
     public int getLightLevel() {
         return lightLevel;
+    }
+
+    @Override
+    public BlockType getType() {
+        return type;
     }
 
     @Override
@@ -113,6 +142,7 @@ public class DefaultBlockTemplate implements BlockTemplate {
         return this;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -125,14 +155,15 @@ public class DefaultBlockTemplate implements BlockTemplate {
                 Float.compare(that.hardness, hardness) == 0 &&
                 isCollideable == that.isCollideable &&
                 hasItem == that.hasItem &&
+                ticksRandomly == that.ticksRandomly &&
                 material == that.material &&
                 renderLayer == that.renderLayer &&
-                ticksRandomly == that.ticksRandomly;
+                type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(material, renderLayer, canSpawnMobs, isAir, lightLevel, isInvisible, hardness, isCollideable, hasItem,ticksRandomly);
+        return Objects.hash(material, renderLayer, canSpawnMobs, isAir, lightLevel, isInvisible, hardness, isCollideable, hasItem, ticksRandomly, type);
     }
 
     @Override
@@ -147,7 +178,8 @@ public class DefaultBlockTemplate implements BlockTemplate {
                 ", hardness=" + hardness +
                 ", isCollideable=" + isCollideable +
                 ", hasItem=" + hasItem +
-                ", ticksRandomly="+ticksRandomly+
+                ", ticksRandomly=" + ticksRandomly +
+                ", type=" + type +
                 '}';
     }
 }

@@ -19,7 +19,7 @@ public class FileItemTemplateProvider implements ItemTemplateProvider {
     public Map<Identifier, ItemTemplate> getTemplates() {
         return new FileTemplateHelper<ItemTemplate>(
                 (file)-> gson.fromJson(new FileReader(file), DefaultItemTemplate.class),
-                DirectoryManager.getINSTANCE().getBlockFolder()
+                DirectoryManager.getINSTANCE().getItemFolder()
         ).getTemplates();
     }
 }
