@@ -1,14 +1,14 @@
 package hu.frontrider.blockfactory.templates;
 
 import hu.frontrider.blockfactory.data.BlockType;
-import hu.frontrider.blockfactory.data.Material;
+import hu.frontrider.blockfactory.data.Materials;
 import net.minecraft.block.BlockRenderLayer;
 
 import java.util.Objects;
 
 public class DefaultBlockTemplate implements BlockTemplate {
 
-    private Material material = Material.STONE;
+    private Materials material = Materials.STONE;
     private BlockRenderLayer renderLayer = BlockRenderLayer.SOLID;
     private boolean canSpawnMobs = true;
     private boolean isAir =false;
@@ -43,7 +43,7 @@ public class DefaultBlockTemplate implements BlockTemplate {
     }
 
     @Override
-    public Material getMaterial() {
+    public Materials getMaterial() {
         return material;
     }
 
@@ -132,7 +132,7 @@ public class DefaultBlockTemplate implements BlockTemplate {
         return this;
     }
 
-    public DefaultBlockTemplate setMaterial(Material material) {
+    public DefaultBlockTemplate setMaterial(Materials material) {
         this.material = material;
         return this;
     }

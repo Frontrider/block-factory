@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.2.5-SNAPSHOT'
 	id 'maven-publish'
+	id "com.jfrog.artifactory" version "4.9.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -10,7 +11,19 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+
+if(rootProject.file('private.gradle').exists()) { //Publishing details
+	apply from: 'private.gradle'
+}
+
 minecraft {
+}
+
+repositories {
+	mavenCentral()
+	maven { url "http://server.bbkr.space:8081/artifactory/libs-release" }
+	maven { url "https://maven.swordglowsblue.com" }
+	
 }
 
 dependencies {
@@ -21,6 +34,11 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	modCompile(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
+	include(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
+
+	modCompile(group: 'io.github.cottonmc', name: 'DynaGear', version: '1.3.1+1.14.4', classifier: 'dev') { exclude(group: 'me.shedaniel', module: 'RoughlyEnoughItems') }
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
@@ -58,23 +76,79 @@ jar {
 	from "LICENSE"
 }
 
+
 // configure the maven publication
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
+		maven(MavenPublication) {
+			from components.java
+
+			artifactId = project.archives_base_name
+
+
+			pom.withXml {
+				def pomFile = asNode()
+				def depsNode = pomFile.get("dependencies")
+				pomFile.remove(depsNode)
+
+				def newDeps = pomFile.appendNode("dependencies")
+				configurations.modCompile.getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+					def artifactNode = newDeps.appendNode("dependency")
+					artifactNode.appendNode('groupId', it.moduleGroup)
+					artifactNode.appendNode('artifactId', it.moduleName)
+					artifactNode.appendNode('version', it.moduleVersion)
+				}
 			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
+			artifacts = [
+					artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}" + ".jar") {
+						//release jar - file location not provided anywhere in loom
+						classifier null
+						builtBy remapJar
+					},
+					artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}-dev" + ".jar") {
+						//release jar - file location not provided anywhere in loom
+						classifier "dev"
+						builtBy remapJar
+					},
+					artifact(tasks.sourcesJar)
+			]
+		}
+	}
+	/* Supply an ext block in private.gradle like so:
+       ext { mavenSnapshotDir="file:///some_local_directory_path" }
+     * and then just run "./gradlew publish" to save the artifacts to the specified directory, in a way that they can be
+     * served by apache or your favorite httpd and behave like a maven repo. Complete with verification hashes.
+     */
+	repositories {
+		if (rootProject.ext.has("localMavenUrl")) {
+			maven {
+				url = rootProject.ext.localMavenUrl
 			}
 		}
 	}
+}
 
-	// select the repositories you want to publish to
-	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
+artifactory {
+	if (project.hasProperty("artifactoryUsername")) {
+		contextUrl = 'http://server.bbkr.space:8081/artifactory/'
+		publish {
+			repository {
+				if (version.contains("SNAPSHOT")) {
+					repoKey = "libs-snapshot"
+				} else {
+					repoKey = "libs-release"
+				}
+				username = artifactoryUsername
+				password = artifactoryPassword
+			}
+			defaults {
+				publications('maven')
+
+				publishArtifacts = true
+				publishPom = true
+			}
+		}
+	} else {
+		println "Cannot configure artifactory; please define ext.artifactoryUsername and ext.artifactoryPassword before running artifactoryPublish"
 	}
 }

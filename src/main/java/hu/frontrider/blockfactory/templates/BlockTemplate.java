@@ -1,12 +1,12 @@
 package hu.frontrider.blockfactory.templates;
 
 import hu.frontrider.blockfactory.data.BlockType;
-import hu.frontrider.blockfactory.data.Material;
+import hu.frontrider.blockfactory.data.Materials;
 import net.minecraft.block.BlockRenderLayer;
 
 public interface BlockTemplate {
 
-    Material getMaterial();
+    Materials getMaterial();
     BlockRenderLayer getRenderLayer();
     boolean canSpawnMobs();
     boolean isAir();

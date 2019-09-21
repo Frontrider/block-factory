@@ -1,14 +1,12 @@
 package hu.frontrider.blockfactory.templates;
 
-import hu.frontrider.blockfactory.data.ItemType;
-
 import java.util.Objects;
 
 public class DefaultItemTemplate implements ItemTemplate {
 
 
     private int count = 64;
-    private ItemType type = ItemType.NORMAL;
+    private String type = "NORMAL";
 
     @Override
     public int maxCount() {
@@ -16,7 +14,7 @@ public class DefaultItemTemplate implements ItemTemplate {
     }
 
     @Override
-    public ItemType getType() {
+    public String getType() {
         return type;
     }
 
@@ -26,7 +24,7 @@ public class DefaultItemTemplate implements ItemTemplate {
         return this;
     }
 
-    public DefaultItemTemplate setType(ItemType type) {
+    public DefaultItemTemplate setType(String type) {
         this.type = type;
         return this;
     }
@@ -37,7 +35,7 @@ public class DefaultItemTemplate implements ItemTemplate {
         if (o == null || getClass() != o.getClass()) return false;
         DefaultItemTemplate that = (DefaultItemTemplate) o;
         return count == that.count &&
-                type == that.type;
+                type.equals(that.type);
     }
 
     @Override

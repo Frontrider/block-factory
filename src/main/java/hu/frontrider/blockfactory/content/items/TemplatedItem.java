@@ -1,4 +1,4 @@
-package hu.frontrider.blockfactory.content;
+package hu.frontrider.blockfactory.content.items;
 
 import hu.frontrider.blockfactory.templates.ItemTemplate;
 import net.minecraft.item.Item;

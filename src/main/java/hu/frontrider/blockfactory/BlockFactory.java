@@ -1,17 +1,17 @@
 package hu.frontrider.blockfactory;
 
 import hu.frontrider.blockfactory.content.block.TemplatedBlock;
-import hu.frontrider.blockfactory.content.TemplatedBow;
-import hu.frontrider.blockfactory.content.TemplatedItem;
-import hu.frontrider.blockfactory.content.TemplatedShield;
 import hu.frontrider.blockfactory.content.block.TemplatedFence;
 import hu.frontrider.blockfactory.content.block.TemplatedSlab;
 import hu.frontrider.blockfactory.content.block.TemplatedStairs;
+import hu.frontrider.blockfactory.content.items.TemplatedItem;
+import hu.frontrider.blockfactory.content.items.dynagear.StaticToolSetLoader;
 import hu.frontrider.blockfactory.templateprovider.BlockTemplateProvider;
 import hu.frontrider.blockfactory.templateprovider.ItemTemplateProvider;
 import hu.frontrider.blockfactory.templates.BlockTemplate;
 import hu.frontrider.blockfactory.templates.ItemTemplate;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -65,16 +65,25 @@ public class BlockFactory implements ModInitializer {
                         }
                         break;
                 }
-
             }
         });
 
+        //load normal items
         itemTemplateProviders.iterator().forEachRemaining(templateProviders -> {
             for (Map.Entry<Identifier, ItemTemplate> templateEntry : templateProviders.getTemplates().entrySet()) {
                 ItemTemplate itemTemplate = templateEntry.getValue();
-
-                Registry.register(Registry.ITEM, templateEntry.getKey(), new TemplatedItem(itemTemplate));
+                parseItemTemplate(itemTemplate, templateEntry.getKey());
             }
         });
+
+        //if dynagear is present, load the custom materials.
+        if(FabricLoader.getInstance().isModLoaded("dynagear")){
+            new StaticToolSetLoader().loadStaticMaterials();
+        }
+    }
+
+
+    private void parseItemTemplate(ItemTemplate template, Identifier identifier) {
+        Registry.register(Registry.ITEM, identifier, new TemplatedItem(template));
     }
 }
