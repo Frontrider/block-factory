@@ -1,18 +1,15 @@
 package hu.frontrider.blockfactory.content.items.dynagear;
 
 import blue.endless.jankson.Jankson;
-import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
 import io.github.cottonmc.dynagear.EquipmentSet;
 import io.github.cottonmc.dynagear.MaterialConfig;
 import io.github.cottonmc.dynagear.api.ConfiguredMaterial;
 import io.github.cottonmc.jankson.JanksonFactory;
 import io.github.cottonmc.staticdata.StaticData;
 import io.github.cottonmc.staticdata.StaticDataItem;
-import net.minecraft.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
