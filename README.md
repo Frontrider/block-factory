@@ -7,6 +7,7 @@ You can register a new block like
 this:`block-factory/blocks/<namespace>/<block-name>.json`
 
 The current json format:
+These are the default values, any of these fields can be omitted.
 
 ```
 {
