@@ -1,7 +1,7 @@
 # Block Factory
 
 This mod registers blocks and simple items based on files inside the
-`block-factory` folder, inside the mc directory.
+`block-factory` folder, inside the mc directory, or inside the static_data directory of a mod jar.
 
 You can register a new block like 
 this:`block-factory/blocks/<namespace>/<block-name>.json`
@@ -9,10 +9,12 @@ this:`block-factory/blocks/<namespace>/<block-name>.json`
 The current json format:
 These are the default values, any of these fields can be omitted.
 
+List of available materials can be found here.
+https://github.com/Frontrider/block-factory/blob/master/src/main/java/hu/frontrider/blockfactory/data/Materials.java
+
 ```
 {
-  //STONE, WOOD,METAL,GLASS,DIRT,SAND
-  //more will be supported later, these are the included ones for the trial.
+
   "material": "STONE",
   //controls how the block should be rendered. Set it to TRANSPARENT if it's not a full block.
   "renderLayer": "SOLID",
@@ -39,4 +41,8 @@ These are the default values, any of these fields can be omitted.
 For an item put a json file under:
 `block-factory/items/<namespace>/<item-name>.json`
 
-Currently, you have to make it an empty json `{}`
+Currently, you can only set the count
+```json
+{
+"count":64
+}```
