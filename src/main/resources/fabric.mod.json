@@ -18,7 +18,10 @@
   "entrypoints": {
     "main": [
       "hu.frontrider.blockfactory.BlockFactory"
-    ]
+    ],
+    "client": [
+      "hu.frontrider.blockfactory.client.Main"
+      ]
   },
   "mixins": [
     "modid.mixins.json"

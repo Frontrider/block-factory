@@ -5,6 +5,7 @@
   "mixins": [
   ],
   "client": [
+    "client.ResourceManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

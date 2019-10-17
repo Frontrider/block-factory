@@ -1,0 +1,3 @@
+hu.frontrider.blockfactory.item.FileArmorMaterialTemplateProvider
+hu.frontrider.blockfactory.item.StaticDataArmorMaterialProvider
+hu.frontrider.blockfactory.item.VanillaArmorMaterialProvider

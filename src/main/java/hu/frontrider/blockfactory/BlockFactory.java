@@ -1,89 +1,110 @@
 package hu.frontrider.blockfactory;
 
-import hu.frontrider.blockfactory.content.block.TemplatedBlock;
-import hu.frontrider.blockfactory.content.block.TemplatedFence;
-import hu.frontrider.blockfactory.content.block.TemplatedSlab;
-import hu.frontrider.blockfactory.content.block.TemplatedStairs;
-import hu.frontrider.blockfactory.content.items.TemplatedItem;
-import hu.frontrider.blockfactory.content.items.dynagear.StaticToolSetLoader;
-import hu.frontrider.blockfactory.templateprovider.BlockTemplateProvider;
-import hu.frontrider.blockfactory.templateprovider.ItemTemplateProvider;
-import hu.frontrider.blockfactory.templates.BlockTemplate;
-import hu.frontrider.blockfactory.templates.ItemTemplate;
+import hu.frontrider.blockfactory.core.templates.BlockTemplate;
+import hu.frontrider.blockfactory.core.templates.ItemTemplate;
+import hu.frontrider.blockfactory.core.templates.initializers.BlockTemplateInitializer;
+import hu.frontrider.blockfactory.core.templates.initializers.ItemTemplateInitializer;
+import hu.frontrider.blockfactory.core.templates.provider.ArmorMaterialTemplateProvider;
+import hu.frontrider.blockfactory.core.templates.provider.BlockTemplateProvider;
+import hu.frontrider.blockfactory.core.templates.provider.ItemTemplateProvider;
+import hu.frontrider.blockfactory.core.templates.provider.ToolMaterialTemplateProvider;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 public class BlockFactory implements ModInitializer {
 
     private ServiceLoader<BlockTemplateProvider> blockTemplateProviders = ServiceLoader.load(BlockTemplateProvider.class);
+    private ServiceLoader<BlockTemplateInitializer> blockTemplateInitializers = ServiceLoader.load(BlockTemplateInitializer.class);
     private ServiceLoader<ItemTemplateProvider> itemTemplateProviders = ServiceLoader.load(ItemTemplateProvider.class);
+    private ServiceLoader<ItemTemplateInitializer> itemTemplateInitializers = ServiceLoader.load(ItemTemplateInitializer.class);
+    private ServiceLoader<ArmorMaterialTemplateProvider> armorMaterialTemplateProviders = ServiceLoader.load(ArmorMaterialTemplateProvider.class);
+    private ServiceLoader<ToolMaterialTemplateProvider> templateProviders = ServiceLoader.load(ToolMaterialTemplateProvider.class);
 
+    private static List<Pair<BlockTemplate,Block>> blocks = new LinkedList<>();
+    private static List<Pair<ItemTemplate,Item>> items = new LinkedList<>();
+
+    public static List<Pair<BlockTemplate, Block>> getBlocks() {
+        return blocks;
+    }
+
+    public static List<Pair<ItemTemplate, Item>> getItems() {
+        return items;
+    }
 
     @Override
     public void onInitialize() {
+        LinkedList<BlockTemplateInitializer> blockinitializers = new LinkedList<>();
+        blockTemplateInitializers.iterator().forEachRemaining(blockinitializers::add);
+
         blockTemplateProviders.iterator().forEachRemaining(templateProviders -> {
             for (Map.Entry<Identifier, BlockTemplate> templateEntry : templateProviders.getTemplates().entrySet()) {
                 BlockTemplate blockTemplate = templateEntry.getValue();
                 Identifier identifier = templateEntry.getKey();
-                Block block;
-
-                switch (blockTemplate.getType()) {
-                    case FENCE:
-                        block = Registry.register(Registry.BLOCK, identifier, new TemplatedFence(blockTemplate));
-                        if (blockTemplate.hasItem()) {
-                            Registry.register(Registry.ITEM, identifier, new BlockItem(block, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
-                        }
-                        break;
-
-                    case SLAB:
-                        block = Registry.register(Registry.BLOCK, identifier, new TemplatedSlab(blockTemplate));
-                        if (blockTemplate.hasItem()) {
-                            Registry.register(Registry.ITEM, identifier, new BlockItem(block, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
-                        }
-                        break;
-
-                    case STAIRS:
-                        block = Registry.register(Registry.BLOCK, identifier, new TemplatedStairs(blockTemplate));
-                        if (blockTemplate.hasItem()) {
-                            Registry.register(Registry.ITEM, identifier, new BlockItem(block, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
-                        }
-                        break;
-
-                    default:
-                        block = Registry.register(Registry.BLOCK, identifier, new TemplatedBlock(blockTemplate));
-                        if (blockTemplate.hasItem()) {
-                            Registry.register(Registry.ITEM, identifier, new BlockItem(block, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
-                        }
-                        break;
+                //initialize the template for all of the valid types.
+                for (BlockTemplateInitializer blockinitializer : blockinitializers) {
+                    if (blockinitializer.isValid(blockTemplate.getType())) {
+                        blocks.add(new ImmutablePair<>(blockTemplate,blockinitializer.initialize(blockTemplate, identifier)));
+                    }
                 }
             }
         });
 
-        //load normal items
+        LinkedList<ItemTemplateInitializer> itemInitializers = new LinkedList<>();
+        itemTemplateInitializers.iterator().forEachRemaining(itemInitializers::add);
+
+        LinkedList<ToolMaterialTemplateProvider> toolMaterialTemplateProviders = new LinkedList<>();
+        templateProviders.iterator().forEachRemaining(toolMaterialTemplateProviders::add);
+
+
+        //TODO: sort out this mess!!
         itemTemplateProviders.iterator().forEachRemaining(templateProviders -> {
             for (Map.Entry<Identifier, ItemTemplate> templateEntry : templateProviders.getTemplates().entrySet()) {
                 ItemTemplate itemTemplate = templateEntry.getValue();
-                parseItemTemplate(itemTemplate, templateEntry.getKey());
+                for (ItemTemplateInitializer itemInitializer : itemInitializers) {
+
+                    if (itemInitializer.itemType() != ItemTemplateInitializer.ItemType.NORMAL) {
+                        if (itemInitializer.itemType() == ItemTemplateInitializer.ItemType.TOOL) {
+                            for (ToolMaterialTemplateProvider toolMaterialTemplateProvider : toolMaterialTemplateProviders) {
+                                toolMaterialTemplateProvider.getTemplates().forEach((identifier, toolMaterial) -> {
+                                    if (itemInitializer.isValid(itemTemplate, identifier)) {
+                                        List<Item> initialize = itemInitializer.initialize(itemTemplate, toolMaterial, null, templateEntry.getKey());
+                                        for (Item item : initialize) {
+                                            items.add(new ImmutablePair<>(itemTemplate,item));
+                                        }
+                                    }
+                                });
+
+                            }
+                        } else {
+                            for (ArmorMaterialTemplateProvider armorMaterialTemplateProvider : armorMaterialTemplateProviders) {
+                                armorMaterialTemplateProvider.getTemplates().forEach((identifier, armorMaterial) -> {
+                                    if (itemInitializer.isValid(itemTemplate, identifier)) {
+                                        List<Item> initialize = itemInitializer.initialize(itemTemplate, null, armorMaterial, templateEntry.getKey());
+                                        for (Item item : initialize) {
+                                            items.add(new ImmutablePair<>(itemTemplate,item));
+                                        }                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        if (itemInitializer.isValid(itemTemplate, null)) {
+                            List<Item> initialize = itemInitializer.initialize(itemTemplate, null, null, templateEntry.getKey());
+                            for (Item item : initialize) {
+                                items.add(new ImmutablePair<>(itemTemplate,item));
+                            }
+                        }
+                    }
+                }
             }
         });
-
-        //if dynagear is present, load the custom materials.
-        if(FabricLoader.getInstance().isModLoaded("dynagear")){
-            new StaticToolSetLoader().loadStaticMaterials();
-        }
-    }
-
-
-    private void parseItemTemplate(ItemTemplate template, Identifier identifier) {
-        Registry.register(Registry.ITEM, identifier, new TemplatedItem(template));
     }
 }

@@ -1,0 +1,3 @@
+hu.frontrider.blockfactory.item.VanillaToolMaterialProvider
+hu.frontrider.blockfactory.item.FileToolMaterialTemplateProvider
+hu.frontrider.blockfactory.item.StaticDataToolMaterialProvider

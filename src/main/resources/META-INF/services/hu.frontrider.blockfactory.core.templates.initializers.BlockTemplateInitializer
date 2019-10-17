@@ -1,0 +1,4 @@
+hu.frontrider.blockfactory.block.initializers.BlockInitializer
+hu.frontrider.blockfactory.block.initializers.FenceInitializer
+hu.frontrider.blockfactory.block.initializers.SlabInitializer
+hu.frontrider.blockfactory.block.initializers.StairsInitializer

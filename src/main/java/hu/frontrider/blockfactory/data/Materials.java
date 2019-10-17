@@ -47,7 +47,7 @@ public enum Materials {
 
     private final Material material;
 
-    private Materials(Material material) {
+    Materials(Material material) {
         this.material = material;
     }
 

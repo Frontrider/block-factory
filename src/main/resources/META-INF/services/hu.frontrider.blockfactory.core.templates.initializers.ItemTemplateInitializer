@@ -1,0 +1,8 @@
+hu.frontrider.blockfactory.item.initializers.ItemInitializer
+hu.frontrider.blockfactory.item.initializers.BowItemInitializer
+hu.frontrider.blockfactory.item.initializers.AxeItemInitializer
+hu.frontrider.blockfactory.item.initializers.CrossBowItemInitializer
+hu.frontrider.blockfactory.item.initializers.PickaxeItemInitializer
+hu.frontrider.blockfactory.item.initializers.ShovelItemInitializer
+hu.frontrider.blockfactory.item.initializers.ShieldtemInitializer
+hu.frontrider.blockfactory.item.initializers.ArmorItemInitializer

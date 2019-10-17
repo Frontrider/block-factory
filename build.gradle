@@ -37,7 +37,7 @@ dependencies {
 	modCompile(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
 	include(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
 
-	modCompile(group: 'io.github.cottonmc', name: 'DynaGear', version: '1.3.1+1.14.4', classifier: 'dev') { exclude(group: 'me.shedaniel', module: 'RoughlyEnoughItems') }
+	//modRuntime(group: 'io.github.cottonmc', name: 'DynaGear', version: '1.3.1+1.14.4', classifier: 'dev') { exclude(group: 'me.shedaniel', module: 'RoughlyEnoughItems') }
 
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
